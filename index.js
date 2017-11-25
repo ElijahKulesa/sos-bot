@@ -36,7 +36,7 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  if (message.id == "286337571095838720"){
+  if (message.channel.id == "286337571095838720"){
     if (message.content === 'ping') {
       message.reply('pong');
     }
