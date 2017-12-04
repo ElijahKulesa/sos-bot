@@ -24,7 +24,7 @@ app.listen(port, () => {
 
 // pings server every 15 minutes to prevent dynos from sleeping
 setInterval(() => {
-  http.get('http://https://strays-of-soap-bot.herokuapp.com/');
+  http.get('https://strays-of-soap-bot.herokuapp.com/');
 }, 900000);
 
 //Discord bot stuff here
