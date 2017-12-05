@@ -27,7 +27,56 @@ setInterval(() => {
   http.get('https://strays-of-soap-bot.herokuapp.com/');
 }, 900000);
 
-//Discord bot stuff here
+//-------------------------RCON stuff here-------------------------
+const rcon = require('srcds-rcon')({
+  address: process.env.RCON_IP,
+  password: process.env.RCON_PW
+});
+
+var connected = false;
+var disconnect;
+function tryconnect() {
+  return rcon.connect()
+    .then((data) => {
+    console.log(data);
+    connected = true;
+    disconnect = setTimeout(() => {
+      rcon.disconnect().then((data) => {
+        console.log(data);
+        clearTimeout(disconnect);
+      },
+       console.error);
+    });
+  })
+    .catch((err) => {
+    console.log(err);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        tryconnect();
+        resolve();
+      }, 1000);
+    });
+  })
+}
+
+function refreshRCON() {
+  clearTimeout(disconnect);
+  setTimeout(disconnect);
+}
+
+function sendMessage(message) {
+  if (connected) {
+    refreshRCON()
+    return rcon.command('say ' + message).then(console.log).catch(console.error);
+  }
+  else {
+    return tryconnect().then(() => {
+      return rcon.command('say ' + message).then(console.log).catch(console.error);
+    });
+  }
+}
+
+//-------------------------Discord bot stuff here-------------------------
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
@@ -37,9 +86,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
   if (message.channel.id == "286337571095838720"){
-    if (message.content === 'ping') {
-      message.reply('pong');
-    }
+    Promise.resolve(sendMessage(message.cleanContent));
   }
 });
 
