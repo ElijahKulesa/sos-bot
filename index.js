@@ -27,6 +27,25 @@ setInterval(() => {
   http.get('https://strays-of-soap-bot.herokuapp.com/');
 }, 900000);
 
+//RCON stuff hereby
+
+var Rcon = require('../node-rcon');
+
+var conn = new Rcon(process.env.RCON_IP, 27015, process.env.RCON_PW); //27015 is default port for source games
+conn.on('auth', function() {
+  console.log("Authed!");
+
+}).on('response', function(str) {
+  console.log("Got response: " + str);
+
+}).on('end', function() {
+  console.log("Socket closed!");
+  process.exit();
+
+});
+
+conn.connect();
+
 //Discord bot stuff here
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -37,9 +56,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
   if (message.channel.id == "286337571095838720"){
-    if (message.content === 'ping') {
-      message.reply('pong');
-    }
+    conn.send('say ' + message.cleanContent);
   }
 });
 
