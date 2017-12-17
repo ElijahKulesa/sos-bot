@@ -36,6 +36,7 @@ const rcon = require('srcds-rcon')({
 var connected = false;
 var disconnect;
 function tryconnect() {
+  console.log('RCON: Connecting...')
   return rcon.connect()
     .then((data) => {
     console.log(data);
@@ -86,6 +87,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
   if (message.channel.id == "286337571095838720"){
+    console.log('recieved message: ' + message.cleanContent);
     Promise.resolve(sendMessage(message.cleanContent));
   }
 });
